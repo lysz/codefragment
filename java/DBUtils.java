@@ -1,6 +1,6 @@
 public class DBUtils{
     
-    public static Connection getConnection() throws Exception {
+    public static Connection getConn() throws Exception {
         Class.forName("com.mysql.jdbc.Driver");
 
         String dbpath = "jdbc:mysql://192.168.0.36:3306/wifiapp2?useUnicode=true&characterEncoding=utf-8";
@@ -8,6 +8,20 @@ public class DBUtils{
         
         return conn;
     }
+    
+	private Connection getConnection() throws Exception {
+		 Connection conn=null;
+		 Context envCtx = null;
+		 InitialContext initCtx = null;
+		 DataSource ds = null;
+         
+		 initCtx = new InitialContext();
+		 envCtx = (Context) initCtx.lookup("java:comp/env");
+	     ds = (DataSource) envCtx.lookup("jdbc/wifi");
+	     conn = ds.getConnection();
+		     
+		 return conn;		
+	}
     
     public static List getData(String sql,Object[] paras) throws Exception{
         Connection conn=null;
