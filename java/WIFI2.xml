@@ -1,0 +1,31 @@
+<Context path="/WIFI2" docBase="/wifiapp/workspace/WIFI_V2/WebRoot" reloadable="true" crossContext="true" debug="0" allowLinking="true" >
+
+<Resource name="jdbc/wifi" auth="Container"
+            type="javax.sql.DataSource"
+            username="wifi"
+            password="wifiapp"
+            validationQuery="select 1"
+            driverClassName="com.mysql.jdbc.Driver"
+            url="jdbc:mysql://192.168.0.36:3306/wifiapp2?useUnicode=true&amp;characterEncoding=utf8"
+            maxWait="10000"
+            initialSize="5"
+            maxActive="100"
+            maxIdle="50"
+            minIdle="5"
+/>
+
+<Resource name="jdbc/wifilog" auth="Container"
+            type="javax.sql.DataSource"
+            username="wifi"
+            password="wifiapp"
+            validationQuery="select 1"
+            driverClassName="com.mysql.jdbc.Driver"
+            url="jdbc:mysql://192.168.0.58:3306/wifiapp2?useUnicode=true&amp;characterEncoding=utf8"
+            maxWait="10000"
+            initialSize="5"
+            maxActive="100"
+            maxIdle="50"
+            minIdle="5"
+/>
+
+</Context>

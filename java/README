@@ -1,0 +1,1 @@
+将 WIFI2.xml 放入 $TOMCAT_HOME/conf/Catalina/localhost 目录下，在 java 代码里面就可以使用 BaseDao.java 里面的 getConnection() 函数了.
