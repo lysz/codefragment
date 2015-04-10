@@ -1,0 +1,2 @@
+将WIFI2.xml放入$TOMCAT_HOME/conf/Catalina/localhost/ 目录下
+my.conf是mysql的配置文件

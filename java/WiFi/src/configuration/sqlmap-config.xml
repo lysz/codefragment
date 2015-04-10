@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMapConfig PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+	
+<sqlMapConfig>
+	<settings
+		cacheModelsEnabled ="true"
+		enhancementEnabled ="true"
+		useStatementNamespaces ="true"
+		lazyLoadingEnabled ="false"
+		errorTracingEnabled ="true"
+		maxRequests ="80"
+		maxSessions ="60"
+		maxTransactions ="35"/>
+		<!--   
+    <settings
+        cacheModelsEnabled="true"   
+			是否启用SqlMapClient上的缓存机制。   
+			 建议设为"true"
+          
+        enhancementEnabled="true"   
+	                      是否针对POJO启用字节码增强机制以提升  
+	         getter/setter的调用效能，避免使用Java   
+	         Reflect所带来的性能开销。   
+                                 同时，这也为Lazy Loading带来了极大的性能  
+                               提升。 建议设为"true"   
+          
+        lazyLoadingEnabled="true"   
+                              是否启用延迟加载机制，建议设为"true"   
+          
+        errorTracingEnabled="true"   
+		        是否启用错误日志，在开发期间建议设为"true"  
+		        以方便调试   
+          
+        maxRequests="32"   
+        	最大并发请求数（Statement并发数）   
+          
+        maxSessions="10"   
+       		 最大Session数。即当前最大允许的并发  
+        SqlMapClient 数。   
+        maxSessions设定必须介于  
+        maxTransactions和maxRequests之间，即   
+        maxTransactions<maxSessionsmaxSessions=<maxRequests  maxTransactions="5"   
+        最大并发事务数   
+          
+        useStatementNamespaces="false"   
+        是否使用Statement命名空间。   
+        这里的命名空间指的是映射文件中， sqlMap节点  
+        的namespace属性，如在上例中针对t_user  
+        表的映射文件sqlMap节点：   
+        <sqlMap namespace="User">   
+        这里，指定了此sqlMap节点下定义的操作均从  
+        属于"User"命名空间。   
+        在useStatementNamespaces="true"的情  
+        况下，Statement调用需追加命名空间，如：  
+        sqlMap.update("User.updateUser",user);   
+        否则直接通过Statement名称调用即可，如：   
+        sqlMap.update("updateUser",user);   
+        但请注意此时需要保证所有映射文件中，  
+        Statement定义无重名。   
+    />     
+      
+ -->
+		 
+		 <sqlMap resource="configuration/sqlmap_data/sqlmap-account.xml"/>
+		 <sqlMap resource="configuration/sqlmap_data/sqlmap-shareaccount.xml"/>
+		 
+		 
+		 <!--  
+        <sqlMap>元素用于包括SQL Map映射文件和其他的SQL Map配置文件。  
+        每个SqlMapClient对象使用的所有SQL Map映射文件都要在此声明。  
+        映射文件作为stream resource从类路径或URL读入。  
+        您必须在这里指定所有的SQL Map文件。  
+          
+        List more here...  
+      <sqlMap resource="com/mydomain/data/Order.xml"/>  
+      <sqlMap resource="com/mydomain/data/Documents.xml"/>  
+    -->  
+</sqlMapConfig>

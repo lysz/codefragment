@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC 
+	"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+	 "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+
+	<constant name="struts.ui.theme" value="simple" />
+	<constant name="struts.objectFactory" value="org.apache.struts2.spring.StrutsSpringObjectFactory"/>  
+	<constant name="struts.action.extension" value="do"/>
+	<constant name="struts.multipart.maxSize" value="209715200"/>
+	
+
+	<!-- 用户 -->
+	<include file="configuration/struts_data/struts-interface.xml"></include>
+
+</struts>

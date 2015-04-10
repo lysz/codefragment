@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="system">
+
+    <insert id="addWifiShareAccount" parameterClass="com.aora.wifi.bean.Func104Req">
+        INSERT INTO tbl_wifi_share_account
+        (
+	        account,
+	        passwd,
+	        status,
+	        mac_address,
+	        longitude,
+	        latitude,
+	        wifi_address,
+	        wifi_type,
+	        wifi_gps_address,
+	        indate,
+	        modify_date,
+	        city,
+	        createby_login_id,
+	        createby_client_id
+        )
+        VALUES
+        (
+            #wifi_name#,
+            #wifi_pass#,
+            #status#,
+            #wifi_mac#,
+            #wifi_longitude#,
+            #wifi_latitude#,
+            #wifi_address#,
+            #wifi_type#,
+            #wifi_gps_address#,
+            NOW(),
+            NOW(),
+            #city#,
+            #createby_login_id#,
+            #createby_client_id#
+        )
+    </insert>
+    
+    <insert id="addWifiShareAccountLog" parameterClass="com.aora.wifi.bean.Func104Req">
+        INSERT INTO tbl_wifi_share_account_logs
+        (
+            createby_login_id,
+            mac_address,
+            wifi_address,
+            wifi_gps_address,
+            wifi_type,
+            indate,
+            score
+        )
+        VALUES
+        (
+            #createby_login_id#,
+            #wifi_mac#,
+            #wifi_address#,
+            #wifi_gps_address#,
+            #wifi_type#,
+            NOW(),
+            #score#
+        )
+    </insert>
+    
+    <update id="updateSharedWIFIAccountStatus" parameterClass="java.util.HashMap">
+        UPDATE 
+            tbl_wifi_share_account
+        SET
+            status = #status#
+        WHERE
+            mac_address = #wifi_mac#
+    </update>
+    
+    <update id="updateSharedWIFI" parameterClass="com.aora.wifi.bean.Func104Req">
+        UPDATE 
+            tbl_wifi_share_account
+        <dynamic prepend="set" > 
+            <isNotEmpty prepend="," property="wifi_name" >
+                account = #wifi_name#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="wifi_pass" >
+                passwd = #wifi_pass#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="wifi_address" >
+                wifi_address = #wifi_address#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="wifi_gps_address" >
+                wifi_gps_address = #wifi_gps_address#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="wifi_type" >
+                wifi_type = #wifi_type#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="createby_login_id" >
+                createby_login_id = #createby_login_id#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="createby_client_id" >
+                createby_client_id = #createby_client_id#
+            </isNotEmpty>
+            <isNotEqual prepend="," property="wifi_longitude" compareValue="0.0">
+                longitude = #wifi_longitude#
+            </isNotEqual>
+            <isNotEqual prepend="," property="wifi_latitude" compareValue="0.0">
+                latitude = #wifi_latitude#
+            </isNotEqual>
+			<isEqual prepend="," property="action_type" compareValue="1">
+			    status = 1
+			</isEqual>
+            <isEqual prepend="," property="action_type" compareValue="0">
+                status = 1
+            </isEqual>
+            <isNotEmpty prepend="," property="wifi_pass" >
+                connectfailureNumber = 0
+            </isNotEmpty>
+        </dynamic>
+        WHERE
+            mac_address = #wifi_mac#
+    </update>
+
+	<select id="getSharedWIFIAccount"  parameterClass="java.lang.String" resultClass="java.util.HashMap">
+		select * from tbl_wifi_share_account where mac_address in (#mac_address#)
+	</select>
+
+    <select id="getShareWifiHotspot" parameterClass="java.util.Map" resultClass="com.aora.wifi.bean.Func104Req">
+    <![CDATA[
+        SELECT 
+            id         AS id,
+            account    AS wifi_name,
+            passwd     AS wifi_pass,
+            longitude  AS wifi_longitude,
+            latitude   AS wifi_latitude,
+            wifi_address     AS wifi_address,
+            wifi_gps_address AS wifi_gps_address,
+            wifi_type  AS wifi_type
+        FROM 
+            tbl_wifi_share_account
+        WHERE 
+            latitude > #leftBottomLat# 
+        AND 
+            latitude < #leftTopLat# 
+        AND 
+            longitude > #leftTopLong# 
+        AND 
+            longitude < #rightTopLong#
+        AND
+            status != 0
+    ]]>
+    </select>
+
+    <select id="getCMCCChinaNetHotspot" parameterClass="java.util.Map" resultClass="com.aora.wifi.bean.Hotspot">
+    <![CDATA[
+        SELECT 
+            id,
+            hotname,
+            address,
+            coverarea,
+            type,
+            longitude,
+            latitude
+        FROM 
+            tbl_hotspot
+        WHERE 
+            latitude > #leftBottomLat# 
+        AND 
+            latitude < #leftTopLat# 
+        AND 
+            longitude > #leftTopLong# 
+        AND 
+            longitude < #rightTopLong#
+    ]]>
+    </select>
+	
+	
+		<update id="updateSharedWIFIAccount" parameterClass="java.util.HashMap" >
+   		 update tbl_wifi_share_account 
+   		 <dynamic prepend="set" > 
+	    	<isNotEmpty prepend="," property="status" >
+        		status = #status#
+      		</isNotEmpty>
+	    	<isNotEmpty prepend="," property="action_date" >
+        		action_date = #action_date#
+      		</isNotEmpty>
+	    	<isNotEmpty prepend="," property="expiry_date" >
+        		expiry_date = #expiry_date#
+      		</isNotEmpty>
+	    	<isNotEmpty prepend="," property="used_client_id" >
+        		used_client_id = #used_client_id#
+      		</isNotEmpty>
+	    	<isNotEmpty prepend="," property="used_login_id" >
+        		used_login_id = #used_login_id#
+      		</isNotEmpty>
+      		,modifydate=now() 
+      	</dynamic>
+	     where id = #id#
+  </update>	
+  
+	
+	
+	
+</sqlMap>

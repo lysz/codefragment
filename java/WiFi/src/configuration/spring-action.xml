@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+	
+
+	
+	<bean id="SystemLoginAction" class="com.aora.wifi.action.SystemLoginAction" scope="prototype">	
+		 <property name="sysAccountDao">
+			<ref bean="sysAccountDao"/>
+		</property>
+
+	</bean>
+	
+	<bean id="SystemRandomPicAction" class="com.aora.wifi.action.SystemRandomPicAction" scope="prototype">	
+	</bean>		
+
+	<bean id="InterFaceAction" class="com.aora.wifi.action.InterFaceAction" scope="prototype">
+		 <property name="sysAccountDao">
+			<ref bean="sysAccountDao"/>
+		</property>	
+	</bean>		
+	
+	<bean id="func1xxAction" class="com.aora.wifi.action.interfaces.func1xxAction" scope="prototype">
+		 <property name="sysAccountDao">
+			<ref bean="sysAccountDao"/>
+		</property>
+		 <property name="sysSharedAccountDao">
+			<ref bean="sysSharedAccountDao"/>
+		</property>			
+	</bean>
+	
+	<bean id="func2xxAction" class="com.aora.wifi.action.interfaces.func2xxAction" scope="prototype">
+		 <property name="sysAccountDao">
+			<ref bean="sysAccountDao"/>
+		</property>
+		 <property name="sysSharedAccountDao">
+			<ref bean="sysSharedAccountDao"/>
+		</property>			
+	</bean>
+		
+	<bean id="func3xxAction" class="com.aora.wifi.action.interfaces.func3xxAction" scope="prototype">
+		 <property name="sysAccountDao">
+			<ref bean="sysAccountDao"/>
+		</property>
+		 <property name="sysSharedAccountDao">
+			<ref bean="sysSharedAccountDao"/>
+		</property>			
+	</bean>		
+		
+	<bean id="AdCallBackAction" class="com.aora.wifi.action.AdCallBackAction" scope="prototype">
+		 <property name="sysAccountDao">
+			<ref bean="sysAccountDao"/>
+		</property>
+	</bean>		
+
+</beans>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+	
+	
+	<bean id="propertyConfig" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<value>classpath:configuration/jdbc.properties</value>
+		</property>
+	</bean>
+ <!-- 	
+	<bean id="dataSourceApp" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClassName}"/>   
+		<property name="url" value="${jdbc.url}"/>
+		<property name="username" value="${jdbc.username}"/>
+		<property name="password" value="${jdbc.password}"/>
+
+
+
+  		<property name="maxWait" value="1000" />
+
+
+		<property name="initialSize" value="15" />
+
+		<property name="maxActive" value="70" />
+
+		<property name="maxIdle" value="15" />
+
+		<property name="minIdle" value="5" />
+
+		<property name="validationQuery" value="select now()" />
+
+		<property name="testOnBorrow" value="false" />
+		<property name="removeAbandonedTimeout" value="30000" />
+		<property name="removeAbandoned" value="true" />
+
+		<property name="timeBetweenEvictionRunsMillis" value="1800000" />
+
+		<property name="minEvictableIdleTimeMillis" value="3600000" />
+  		
+	</bean>
+ -->	
+<!-- 	
+	
+ 		 最大等待时间，当没有可用连接时，连接池等待连接释放的最大时间 
+  		<property name="maxWait" value="1000" />
+
+		 连接池启动时的初始值 
+		<property name="initialSize" value="15" />
+		 连接池的最大值 
+		<property name="maxActive" value="70" />
+		 最大空闲值.当经过一个高峰时间后，连接池可以慢慢将已经用不到的连接慢慢释放一部分，一直减少到maxIdle为止 
+		<property name="maxIdle" value="15" />
+		 最小空闲值.当空闲的连接数少于阀值时，连接池就会预申请去一些连接，以免洪峰来时来不及申请 
+		<property name="minIdle" value="5" />
+		#给出一条简单的sql语句进行验证
+		<property name="validationQuery" value="select now()" />
+		#在取出连接时进行有效验证
+		<property name="testOnBorrow" value="false" />
+		<property name="removeAbandonedTimeout" value="30000" />
+		<property name="removeAbandoned" value="true" />
+		 #运行判断连接超时任务的时间间隔，单位为毫秒，默认为-1，即不执行任务。 
+		<property name="timeBetweenEvictionRunsMillis" value="1800000" />
+		 #连接的超时时间，默认为半小时。 
+		<property name="minEvictableIdleTimeMillis" value="3600000" />	
+ -->	
+<!--	
+    <bean id="dataSourceApp" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">   
+        <property name="driverClass" value="${jdbc.driverClassName}"/>   
+        <property name="jdbcUrl" value="${jdbc.url}"/>   
+        <property name="properties">   
+        <props>   
+            <prop key="c3p0.minPoolSize">1</prop>    
+            <prop key="hc3p0.maxPoolSize">10</prop>    
+            <prop key="hc3p0.timeout">60</prop>    
+            <prop key="c3p0.max_statement">50</prop>    
+            <prop key="c3p0.testConnectionOnCheckout">true</prop>    
+            <prop key="hibernate.c3p0.testConnectionOnCheckout">false</prop>   
+            <prop key="user">${jdbc.username}</prop>    
+            <prop key="password">${jdbc.password}</prop>   
+        </props>   
+      </property>   
+    </bean>   
+ -->	
+	
+      
+	    <bean id="dataSourceApp" class="org.springframework.jndi.JndiObjectFactoryBean">
+	    	<property name="jndiName"><value>java:comp/env/jdbc/wifi</value></property>
+	    </bean>
+     
+	
+ 	<!--引入具体的sql语句配置文件（注意：sqlMapConfig.xml文件的路径） -->
+	<bean id="sqlMapClientDataSource" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocation">
+			<value>classpath:configuration/sqlmap-config.xml</value>
+		</property>
+		<property name="dataSource">
+			<ref local="dataSourceApp" />
+		</property>
+	</bean>
+</beans>

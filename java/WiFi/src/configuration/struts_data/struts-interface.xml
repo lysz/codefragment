@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC 
+	"-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+	 "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+
+	<!-- yiyonghui -->
+	<package name="system" namespace="/" extends="struts-default">
+		
+		<action name="_interface" class="InterFaceAction" method="_interface">
+			<result name="func100" type="chain" ><param name="actionName">func100</param><param name="namespace">/interfaces</param></result>
+			<result name="func101" type="chain" ><param name="actionName">func101</param><param name="namespace">/interfaces</param></result>
+			<result name="func102" type="chain" ><param name="actionName">func102</param><param name="namespace">/interfaces</param></result>
+			<result name="func103" type="chain" ><param name="actionName">func103</param><param name="namespace">/interfaces</param></result>
+			<result name="func104" type="chain" ><param name="actionName">func104</param><param name="namespace">/interfaces</param></result>
+			<result name="func105" type="chain" ><param name="actionName">func105</param><param name="namespace">/interfaces</param></result>
+			<result name="func106" type="chain" ><param name="actionName">func106</param><param name="namespace">/interfaces</param></result>
+			<result name="func107" type="chain" ><param name="actionName">func107</param><param name="namespace">/interfaces</param></result>
+			<result name="func108" type="chain" ><param name="actionName">func108</param><param name="namespace">/interfaces</param></result>
+			<result name="func109" type="chain" ><param name="actionName">func109</param><param name="namespace">/interfaces</param></result>
+			<result name="func110" type="chain" ><param name="actionName">func110</param><param name="namespace">/interfaces</param></result>
+			
+			<result name="func201" type="chain" ><param name="actionName">func201</param><param name="namespace">/interfaces</param></result>
+			<result name="func202" type="chain" ><param name="actionName">func202</param><param name="namespace">/interfaces</param></result>
+			<result name="func203" type="chain" ><param name="actionName">func203</param><param name="namespace">/interfaces</param></result>
+			<result name="func204" type="chain" ><param name="actionName">func204</param><param name="namespace">/interfaces</param></result>
+			<result name="func205" type="chain" ><param name="actionName">func205</param><param name="namespace">/interfaces</param></result>
+			<result name="func206" type="chain" ><param name="actionName">func206</param><param name="namespace">/interfaces</param></result>
+			<result name="func207" type="chain" ><param name="actionName">func207</param><param name="namespace">/interfaces</param></result>
+			<result name="func208" type="chain" ><param name="actionName">func208</param><param name="namespace">/interfaces</param></result>			
+			<result name="func209" type="chain" ><param name="actionName">func209</param><param name="namespace">/interfaces</param></result>
+			<result name="func210" type="chain" ><param name="actionName">func210</param><param name="namespace">/interfaces</param></result>			
+			<result name="func211" type="chain" ><param name="actionName">func211</param><param name="namespace">/interfaces</param></result>
+			<result name="func212" type="chain" ><param name="actionName">func212</param><param name="namespace">/interfaces</param></result>			
+			<result name="func213" type="chain" ><param name="actionName">func213</param><param name="namespace">/interfaces</param></result>
+			<result name="func214" type="chain" ><param name="actionName">func214</param><param name="namespace">/interfaces</param></result>			
+			<result name="func215" type="chain" ><param name="actionName">func215</param><param name="namespace">/interfaces</param></result>
+			<result name="func216" type="chain" ><param name="actionName">func216</param><param name="namespace">/interfaces</param></result>
+			<result name="func217" type="chain" ><param name="actionName">func217</param><param name="namespace">/interfaces</param></result>
+			<result name="func218" type="chain" ><param name="actionName">func218</param><param name="namespace">/interfaces</param></result>
+			<result name="func219" type="chain" ><param name="actionName">func219</param><param name="namespace">/interfaces</param></result>
+			<result name="func220" type="chain" ><param name="actionName">func220</param><param name="namespace">/interfaces</param></result>
+			<result name="func221" type="chain" ><param name="actionName">func221</param><param name="namespace">/interfaces</param></result>
+			<result name="func222" type="chain" ><param name="actionName">func222</param><param name="namespace">/interfaces</param></result>
+			<result name="func223" type="chain" ><param name="actionName">func223</param><param name="namespace">/interfaces</param></result>
+			<result name="func224" type="chain" ><param name="actionName">func224</param><param name="namespace">/interfaces</param></result>
+			<result name="func225" type="chain" ><param name="actionName">func225</param><param name="namespace">/interfaces</param></result>												
+			
+			<result name="func301" type="chain" ><param name="actionName">func301</param><param name="namespace">/interfaces</param></result>
+			<result name="func302" type="chain" ><param name="actionName">func302</param><param name="namespace">/interfaces</param></result>
+			
+			<result name="error" type="chain" >_error</result>
+			<result name="success">/index.jsp</result>
+		</action>
+
+		<action name="_init_DesKey" class="InterFaceAction" method="_init_DesKey"></action>
+		<action name="_error" class="InterFaceAction" method="_error"></action>
+         
+	</package>
+
+
+	<package name="interfaces" namespace="/interfaces" extends="struts-default">
+		<action name="func100" class="func1xxAction" method="func100"></action>
+		<action name="func101" class="func1xxAction" method="func101"></action>
+		<action name="func102" class="func1xxAction" method="func102"></action>
+		<action name="func103" class="func1xxAction" method="func103"></action>
+		<action name="func104" class="func1xxAction" method="func104"></action>
+		<action name="func105" class="func1xxAction" method="func105"></action>
+		<action name="func106" class="func1xxAction" method="func106"></action>
+		<action name="func107" class="func1xxAction" method="func107"></action>
+		<action name="func108" class="func1xxAction" method="func108"></action>	
+		<action name="func109" class="func1xxAction" method="func109"></action>			
+        <action name="func110" class="func1xxAction" method="func110"></action>
+        
+        
+        <action name="func201" class="func2xxAction" method="func201"></action>
+        <action name="func202" class="func2xxAction" method="func202"></action>
+        <action name="func203" class="func2xxAction" method="func203"></action>
+        <action name="func204" class="func2xxAction" method="func204"></action>
+        <action name="func205" class="func2xxAction" method="func205"></action>
+        <action name="func206" class="func2xxAction" method="func206"></action>
+        <action name="func207" class="func2xxAction" method="func207"></action>        
+        <action name="func208" class="func2xxAction" method="func208"></action>        
+        <action name="func209" class="func2xxAction" method="func209"></action>
+        <action name="func210" class="func2xxAction" method="func210"></action>
+        <action name="func211" class="func2xxAction" method="func211"></action>
+        <action name="func212" class="func2xxAction" method="func212"></action>                                
+		<action name="func213" class="func2xxAction" method="func213"></action>
+		<action name="func214" class="func2xxAction" method="func214"></action>		
+		<action name="func215" class="func2xxAction" method="func215"></action>
+		<action name="func216" class="func2xxAction" method="func216"></action>
+		<action name="func217" class="func2xxAction" method="func217"></action>
+		<action name="func218" class="func2xxAction" method="func218"></action>
+		<action name="func219" class="func2xxAction" method="func219"></action>
+		<action name="func220" class="func2xxAction" method="func220"></action>
+		<action name="func221" class="func2xxAction" method="func221"></action>
+		<action name="func222" class="func2xxAction" method="func222"></action>
+		<action name="func223" class="func2xxAction" method="func223"></action>
+		<action name="func224" class="func2xxAction" method="func224"></action>
+		<action name="func225" class="func2xxAction" method="func225"></action>
+		
+		
+		<action name="func301" class="func3xxAction" method="func301"></action>
+		<action name="func302" class="func3xxAction" method="func302"></action>
+								
+	</package>
+
+
+	<package name="ad" namespace="/ad" extends="struts-default">
+		<action name="callback_ym" class="AdCallBackAction" method="callback_ym"></action>
+		<action name="callback_ym_ios" class="AdCallBackAction" method="callback_ym_ios"></action>
+		
+		<action name="callback_dm" class="AdCallBackAction" method="callback_dm"></action>
+		<action name="callback_dm_ios" class="AdCallBackAction" method="callback_dm_ios"></action>
+		
+		<action name="callback_wp" class="AdCallBackAction" method="callback_wp"></action>
+		<action name="callback_wp_ios" class="AdCallBackAction" method="callback_wp_ios"></action>
+	</package>
+
+
+</struts>

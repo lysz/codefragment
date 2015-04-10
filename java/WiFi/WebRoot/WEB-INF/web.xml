@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" 
+	xmlns="http://java.sun.com/xml/ns/javaee" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+	http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	
+	
+  <servlet>
+    <servlet-name>testServlet</servlet-name>
+    <servlet-class>com.aora.wifi.util.testServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>testServlet</servlet-name>
+    <url-pattern>/system/_test.do</url-pattern>
+  </servlet-mapping>	
+	
+  <servlet>
+    <servlet-name>InterServlet</servlet-name>
+    <servlet-class>com.aora.wifi.servlet.InterFaceAction</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>InterServlet</servlet-name>
+    <url-pattern>/system/_interface.do</url-pattern>
+  </servlet-mapping>	
+
+  <servlet>
+    <servlet-name>AD_YMServlet</servlet-name>
+    <servlet-class>com.aora.wifi.servlet.AD_YM</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AD_YMServlet</servlet-name>
+    <url-pattern>/ad/callback_ym.do</url-pattern>
+  </servlet-mapping>	
+
+
+  <servlet>
+    <servlet-name>AD_YM_ISOServlet</servlet-name>
+    <servlet-class>com.aora.wifi.servlet.AD_YM_ISO</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AD_YM_ISOServlet</servlet-name>
+    <url-pattern>/ad/callback_ym_iso.do</url-pattern>
+  </servlet-mapping>	
+
+
+  <servlet>
+    <servlet-name>AD_DMServlet</servlet-name>
+    <servlet-class>com.aora.wifi.servlet.AD_DM</servlet-class>
+
+    
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AD_DMServlet</servlet-name>
+    <url-pattern>/ad/callback_dm.do</url-pattern>
+  </servlet-mapping>	
+
+
+  <servlet>
+    <servlet-name>AD_DM_ISOServlet</servlet-name>
+    <servlet-class>com.aora.wifi.servlet.AD_DM_ISO</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AD_DM_ISOServlet</servlet-name>
+    <url-pattern>/ad/callback_dm_iso.do</url-pattern>
+  </servlet-mapping>	
+
+
+
+   <servlet>
+    <servlet-name>AD_WPServlet</servlet-name>
+    <servlet-class>com.aora.wifi.servlet.AD_WP</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AD_WPServlet</servlet-name>
+    <url-pattern>/ad/callback_wp.do</url-pattern>
+  </servlet-mapping>	
+
+
+  <servlet>
+    <servlet-name>AD_WP_ISOServlet</servlet-name>
+    <servlet-class>com.aora.wifi.servlet.AD_WP_ISO</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AD_WP_ISOServlet</servlet-name>
+    <url-pattern>/ad/callback_wp_iso.do</url-pattern>
+  </servlet-mapping>	
+
+  <servlet>
+    <servlet-name>CoinCallback</servlet-name>
+    <servlet-class>com.aora.wifi.action.ChongZhiCallbackServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CoinCallback</servlet-name>
+    <url-pattern>/coin/callback.do</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>AlipayCallback</servlet-name>
+    <servlet-class>com.aora.wifi.action.AlipayCallbackServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AlipayCallback</servlet-name>
+    <url-pattern>/alipay/callback.do</url-pattern>
+  </servlet-mapping>
+
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+</web-app>

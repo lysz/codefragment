@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="system">
+
+
+	<select id="getInUsedWIFIAccount"  parameterClass="java.lang.String" resultClass="java.util.HashMap">
+		select * from tbl_wifi_account where (status=2 || status=3) and used_client_id=#uid#
+	</select>
+
+	<select id="getWorkOrderList"  parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+     	select * from tbl_wifi_account a where status=1 
+<!-- 
+   		 <dynamic prepend="where" > 
+     		<isNotEmpty prepend="AND" property="episodecode">
+				a.Episode_Code=#episodecode#
+			</isNotEmpty>				
+		</dynamic>
+ -->		
+																																									
+ 
+     	
+	</select>
+	
+	
+		<update id="updateWIFIAccount" parameterClass="java.util.HashMap" >
+   		 update tbl_wifi_account 
+   		 <dynamic prepend="set" > 
+	    	<isNotEmpty prepend="," property="status" >
+        		status = #status#
+      		</isNotEmpty>
+	    	<isNotEmpty prepend="," property="action_date" >
+        		action_date = #action_date#
+      		</isNotEmpty>
+	    	<isNotEmpty prepend="," property="expiry_date" >
+        		expiry_date = #expiry_date#
+      		</isNotEmpty>
+	    	<isNotEmpty prepend="," property="used_client_id" >
+        		used_client_id = #used_client_id#
+      		</isNotEmpty>
+	    	<isNotEmpty prepend="," property="used_login_id" >
+        		used_login_id = #used_login_id#
+      		</isNotEmpty>
+      		,modifydate=now() 
+      	</dynamic>
+	     where id = #id#
+  </update>	
+  
+	
+	
+	
+</sqlMap>
