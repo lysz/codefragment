@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="settlement">
+
+    
+    <select id="getAppBySpreadMonth" resultType="com.aora.sales.common.bean.App" parameterType="string">
+      SELECT 
+          a.appId, 
+          (select dictName from tbl_dict where dictType = 'appdividedMode' and dictId = a.dividedMode) AS dividedModeName,
+          a.companyId
+      FROM 
+          tbl_app a
+      WHERE
+          a.statusId in (SELECT dictId FROM tbl_dict WHERE dicttype='appstatus' AND keyName = 'onlined' OR keyName = 'offlined')
+      OR
+          a.appId in (SELECT distinct appid FROM tbl_cptspreaddate WHERE date_format(spreaddate, '%Y.%c') = #{spreadMonth})
+      OR
+          a.appId in (SELECT distinct appid FROM tbl_cpaspreaddate WHERE date_format(spreaddate, '%Y.%c') = #{spreadMonth})
+    </select>
+     
+    
+    <select id="getBill" resultType="com.aora.sales.common.bean.Bill" parameterType="map">
+      SELECT 
+          b.billId, 
+          b.companyId, 
+          c.companyName AS companyName,
+          (SELECT dictName FROM tbl_dict WHERE dictId = c.categoryId) AS companyCategoryName,
+          date_format(b.billDate, '%Y.%c') AS billMonth,
+          b.totalMoney,
+          b.requiredMoney,
+          b.actualMoney,
+          (SELECT dictName FROM tbl_dict WHERE dictId = b.status) AS statusName,
+          b.invoiceId,
+          DATE_FORMAT(b.lastChangeDate, '%Y-%c-%e %H:%i:%s') AS lastChangeDateStr,
+          b.description
+      FROM 
+          tbl_bill b
+      LEFT JOIN
+          tbl_company c
+      ON
+          b.companyId = c.companyId
+      WHERE
+          1 = 1
+          
+          <if test="status != 0">
+            AND b.status=#{status}
+          </if>
+          
+          <if test="from == 'business'">
+              AND b.status = (SELECT dictId FROM tbl_dict WHERE dictType = 'settlementstatus' AND keyName = 'settlement-wait-submit')
+          </if>
+          
+          <if test="from == 'operation'">
+              AND b.status = (SELECT dictId FROM tbl_dict WHERE dictType = 'settlementstatus' AND keyName = 'settlement-wait-operation')
+          </if>
+          
+          <if test="from == 'operationDirector'">
+              AND b.status = (SELECT dictId FROM tbl_dict WHERE dictType = 'settlementstatus' AND keyName = 'settlement-wait-operationDirector')
+          </if>
+          
+          <if test="from == 'financeAudit'">
+              AND b.status = (SELECT dictId FROM tbl_dict WHERE dictType = 'settlementstatus' AND keyName = 'settlement-wait-financeaudit')
+          </if>
+          
+          <if test="from == 'financeConfirm'">
+              AND b.status = (SELECT dictId FROM tbl_dict WHERE dictType = 'settlementstatus' AND keyName = 'settlement-wait-financeconfirm')
+          </if>
+          
+          <if test="billMonth != null">
+            AND date_format(b.billDate, '%Y.%m') = #{billMonth}
+          </if>
+          
+	      ORDER BY
+	          b.billId
+	      <if test="getTotalSize != 1">      
+	          LIMIT #{start}, #{pageSize}
+	      </if>
+    </select>
+    
+    <select id="getBillDetail"  parameterType="map"  resultType="com.aora.sales.common.bean.BillDetail">
+        SELECT 
+            d.billDetailId,
+            d.billId,
+            d.appId,
+            d.expression,
+            d.totalMoney,
+            d.requiredMoney,
+            d.actualMoney,
+            d.downloadCount,
+            d.benefit,
+            d.billMonth,
+            d.spreadDate,
+            d.description,
+            a.appName,
+            a.packageName,
+            a.iconPath,
+            (SELECT dictName FROM tbl_dict WHERE dictId = a.mainCategory) AS mainCategoryName,
+            (SELECT dictName FROM tbl_dict WHERE dictId = a.dividedMode) AS dividedModeName
+        FROM
+            tbl_billdetail d
+        LEFT JOIN
+            tbl_app a
+        ON
+            d.appId = a.appId
+        WHERE
+            1 = 1
+          
+          <if test="billDetailId != 0">
+              AND d.billDetailId = #{billDetailId}
+          </if>  
+            
+          <if test="billId != 0">
+              AND d.billId=#{billId}
+          </if>
+          
+          <if test="appId != 0">
+              AND d.appId = #{appId}
+          </if>
+          
+          <if test="billMonth != null">
+              AND d.billMonth = #{billMonth}
+          </if>
+          
+          ORDER BY
+              d.billDetailId
+          <if test="getTotalSize != 1">      
+              LIMIT #{start}, #{pageSize}
+          </if>
+    </select>
+    
+   <insert id="insertBillDetail" parameterType="com.aora.sales.common.bean.BillDetail">
+        INSERT INTO tbl_billdetail(
+            billId,
+            appId,
+            billMonth,
+            expression,
+            totalMoney,
+            requiredMoney,
+            actualMoney,
+            spreadDate,
+            downloadCount,
+            benefit,
+            description)
+        VALUES(
+            #{billId},
+            #{appId},
+            #{billMonth},
+            #{expression},
+            #{totalMoney},
+            #{requiredMoney},
+            #{actualMoney},
+            #{spreadDate},
+            #{downloadCount},
+            #{benefit},
+            #{description})
+   </insert>
+    
+   <insert id="insertBill" parameterType="com.aora.sales.common.bean.Bill" useGeneratedKeys="true">
+        INSERT INTO tbl_bill(
+            companyId,
+            billDate,
+            totalMoney,
+            requiredMoney,
+            actualMoney,
+            createDate,
+            status,
+            invoiceId,
+            lastChangeDate,
+            description)
+        VALUES(
+            #{companyId},
+            NOW(),
+            #{totalMoney},
+            #{requiredMoney},
+            #{actualMoney},
+            NOW(),
+            #{status},
+            #{invoiceId},
+            #{lastChangeDate},
+            #{description}) 
+            
+        <selectKey resultType="int" order="AFTER" keyProperty="billId">
+            SELECT LAST_INSERT_ID() as billId
+        </selectKey>
+            
+   </insert>
+   
+   <insert id="addCPASpread" parameterType="com.aora.sales.common.bean.CPASpreadDate">
+       INSERT INTO tbl_cpaspreaddate(
+           appId,
+           spreadDate,
+           price)
+       VALUES(
+           #{appId},
+           #{spreadDate},
+           #{price})
+   </insert>
+   
+   <update id="updateBillDetail" parameterType="com.aora.sales.common.bean.BillDetail">
+       UPDATE
+           tbl_billdetail
+       <set>
+           description = description
+           <if test="totalMoney != null">,totalMoney=#{totalMoney}</if>
+           <if test="requiredMoney != null">,requiredMoney=#{requiredMoney}</if>
+           <if test="actualMoney != null">,actualMoney=#{actualMoney}</if>
+           <if test="expression != null">,expression=#{expression}</if>
+           <if test="spreadDate != null">,spreadDate=#{spreadDate}</if>
+           <if test="downloadCount != 0">,downloadCount=#{downloadCount}</if>
+       </set> 
+       WHERE
+       
+           1 = 1
+		   
+          <if test="billDetailId != 0">
+              AND billDetailId = #{billDetailId}
+          </if>  
+		
+		   <if test="appId != 0">
+		       AND appId=#{appId}
+		   </if>
+           
+           <if test="billId != 0">
+               AND billId=#{billId}
+           </if>
+           
+           <if test="billMonth != null">
+               AND billMonth=#{billMonth}
+           </if> 
+   </update>
+   
+   <update id="updateBill" parameterType="com.aora.sales.common.bean.Bill">
+       UPDATE
+           tbl_bill       
+        <set>
+            lastChangeDate = NOW()
+            <if test="companyId != 0">,companyId=#{companyId}</if>
+            <if test="billDate != null">,billDate=#{billDate}</if>
+            <if test="totalMoney != null">,totalMoney=#{totalMoney}</if>
+            <if test="requiredMoney != null">,requiredMoney=#{requiredMoney}</if>
+            <if test="actualMoney != null">,actualMoney=#{actualMoney}</if>
+            <if test="createDate != null">,createDate=#{createDate}</if>
+            <if test="status != 0">,status=#{status}</if>
+            <if test="invoiceId != 0">,invoiceId=#{invoiceId}</if>
+            <if test="description != null">,description=#{description}</if>
+        </set>
+        
+        WHERE
+            billId=#{billId}
+   </update>
+   
+   <select id="getAllBillMonth" resultType="com.aora.sales.common.bean.Bill">
+       SELECT 
+           distinct DATE_FORMAT(billDate, '%Y.%c') AS billMonth 
+       FROM 
+           tbl_bill
+   </select>
+   
+   <select id="getCPASpreaddate" parameterType="map" resultType="com.aora.sales.common.bean.CPASpreadDate">
+       SELECT 
+           cpasId,
+           replace(substring(spreadDate, 6), '-', '.') AS spreadDate,
+           price 
+       FROM 
+           tbl_cpaspreaddate
+       WHERE
+           appId = #{appId}
+           
+            <if test="billMonth != null">
+                AND spreadDate LIKE CONCAT('%', #{billMonth},'%')
+            </if>
+            
+       ORDER BY str_to_date(spreadDate, '%Y-%m-%d')
+   </select>
+   
+   <select id="getCPTSpreadDate" parameterType="map" resultType="com.aora.sales.common.bean.CPTSpreadDate">
+        SELECT 
+            cptSpreadId,
+            replace(substring(spreadDate, 6), '-', '.') AS spreadDate,
+            price
+        FROM 
+            tbl_cptspreaddate 
+        WHERE 
+            appId = #{appId}
+         
+            <if test="billMonth != null">
+                AND spreadDate LIKE CONCAT('%', #{billMonth},'%')
+            </if>
+        
+        ORDER BY str_to_date(spreadDate, '%Y-%m-%d')
+   </select>
+   
+   <update id="updateCPASpreaddate" parameterType="com.aora.sales.common.bean.CPASpreadDate">
+       UPDATE tbl_cpaspreaddate
+       
+        <set>
+            <if test="price != null">price=#{price}</if>
+        </set>
+        
+        WHERE
+            cpasId=#{cpasId}
+   </update>
+   
+   <delete id="deleteCPASpreaddate" parameterType="int">
+       DELETE FROM 
+           tbl_cpaspreaddate
+       WHERE 
+           cpasId = #{cpasId}
+   </delete>
+</mapper>

@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="appupload">
+
+    
+    <select id="getDictByType" resultType="com.aora.sales.common.bean.Dict" parameterType="string">
+      SELECT 
+          dictId, 
+          dictType,
+          keyName, 
+          dictName,
+          dictValue,
+          description
+      FROM 
+          tbl_dict
+      WHERE
+          dictType=#{dictType}
+    </select>
+    
+    <select id="getDict" resultType="com.aora.sales.common.bean.Dict" parameterType="com.aora.sales.common.bean.Dict">
+      SELECT 
+          dictId, 
+          dictType, 
+          keyName,
+          dictName,
+          dictValue,
+          description
+      FROM 
+          tbl_dict
+      WHERE
+          1 = 1
+          
+          <if test="dictType != null">
+            AND dictType=#{dictType}
+          </if>
+          
+          <if test="keyName != null">
+            AND  keyName=#{keyName}
+          </if>
+          
+          <if test="dictName != null">
+              AND dictName = #{dictName}
+          </if>
+          
+          <if test="dictId != 0">
+              AND dictId=#{dictId}
+          </if>
+    </select>
+    
+   <insert id="addAppUploadApply" parameterType="com.aora.sales.common.bean.App" useGeneratedKeys="true">
+        INSERT INTO tbl_app(
+            appName,
+            packageName,
+            iconPath,
+            apkPath,
+            platformURL,
+            platformPwd,
+            dividedMode,
+            offlineDate,
+            onlineDate,
+            price,
+            mainCategory,
+            companyId,
+            createrId,
+            createDate,
+            contractId,
+            statusId,
+            testResult,
+            description)
+        VALUES(
+            #{appName},
+            #{packageName},
+            #{iconPath},
+            #{apkPath},
+            #{platformURL},
+            #{platformPwd},
+            #{dividedMode},
+            #{offlineDate},
+            #{onlineDate},
+            #{price},
+            #{mainCategory},
+            #{companyId},
+            #{createrId},
+            NOW(),
+            #{contractId},
+            #{statusId},
+            #{testResult},
+            #{description}) 
+            
+        <selectKey resultType="int" order="AFTER" keyProperty="appId">
+            SELECT LAST_INSERT_ID() as appId
+        </selectKey>
+   </insert>
+   
+   <select id="getApps" resultType="com.aora.sales.common.bean.App" parameterType="map">
+       SELECT
+           a.appId         AS appId,
+           a.appName       AS appName,
+           a.companyId     AS companyId,
+           c.companyName   AS companyName,
+           a.packageName   AS packageName,
+           a.apkPath       AS apkPath,
+           a.iconPath      AS iconPath,
+           a.platformURL   AS platformURL,
+           a.platformPwd   AS platformPwd,
+           (select dictName from tbl_dict where dictType = 'appdividedMode' and dictId = a.dividedMode) AS dividedModeName,
+           a.dividedMode   AS dividedMode,
+           a.price         AS price,
+           (select dictName from tbl_dict where dictType = 'isappmaincategory' and dictId = a.mainCategory) AS mainCategoryName,
+           a.mainCategory  AS mainCategory,
+           (select dictName from tbl_dict where dictType = 'appstatus' and dictId = a.statusId) AS status,
+           a.statusId      AS statusId,
+           a.testResult    AS testResult,
+           date_format(a.onlineDate, '%Y-%m-%d')    AS onlineDateStr,
+           date_format(a.offlineDate, '%Y-%m-%d')   AS offlineDateStr
+       FROM
+           tbl_app a
+       LEFT JOIN
+           tbl_company c
+       ON
+           a.companyId = c.companyId
+       WHERE
+           1 = 1
+          <if test="appName != null">
+              AND 
+                  (a.appName LIKE CONCAT('%', #{appName},'%')
+              OR 
+                  a.packageName LIKE CONCAT('%', #{appName},'%'))
+          </if>
+                    
+          <if test="companyId != 0">
+              AND a.companyId=#{companyId}
+          </if>
+       
+          <if test="mainCategory != 0">
+              AND a.mainCategory=#{mainCategory}
+          </if>
+          
+          <if test="appId != 0">
+              AND a.appId=#{appId}
+          </if>
+          
+          <if test="statusId != 0">
+              AND a.statusId=#{statusId}
+          </if>
+          
+          <if test="dividedMode != 0">
+              AND a.dividedMode=#{dividedMode}
+          </if>
+          
+          <if test="from == 'business' and type != 'offline'">
+              AND a.statusId = (SELECT dictId FROM tbl_dict WHERE dictType = 'appstatus' AND keyName = 'new')
+          </if>
+          
+          <if test="from == 'business' and type == 'offline'">
+              AND a.statusId = (SELECT dictId FROM tbl_dict WHERE dictType = 'appstatus' AND keyName = 'onlined')
+          </if>
+          
+          <if test="from == 'test'">
+              AND a.statusId = (SELECT dictId FROM tbl_dict WHERE dictType = 'appstatus' AND keyName = 'wait-test')
+          </if>
+          
+          <if test="from == 'operation' and type != 'offline'">
+              AND a.statusId = (SELECT dictId FROM tbl_dict WHERE dictType = 'appstatus' AND keyName = 'online-wait-operation')
+          </if>
+          
+          <if test="from == 'operation' and type == 'offline'">
+              AND a.statusId = (SELECT dictId FROM tbl_dict WHERE dictType = 'appstatus' AND keyName = 'offline-wait-operation')
+          </if>
+          
+	      ORDER BY
+	          a.appId
+	      <if test="getTotalSize != 1">      
+	          LIMIT #{start}, #{pageSize}
+	      </if>
+   </select>
+   
+   <insert id="addCPTSpreadDate" parameterType="com.aora.sales.common.bean.CPTSpreadDate">
+       INSERT INTO tbl_cptspreaddate(
+           appId,
+           spreadDate,
+           price)
+       VALUES(
+           #{appId},
+           #{spreadDate},
+           #{price})
+   </insert>
+   
+   <select id="getMinSpreadMonth" parameterType="int" resultType="string">
+        SELECT 
+            replace(substring_index(spreadDate, '-', 2), '-', '.')
+        FROM 
+            tbl_cptspreaddate 
+        WHERE 
+            appId = #{appId} 
+        ORDER BY str_to_date(spreadDate, '%Y-%m-%d') ASC limit 1
+   </select>
+	
+   <select id="getSpreadDate" parameterType="map" resultType="com.aora.sales.common.bean.CPTSpreadDate">
+        SELECT 
+            cptSpreadId,
+            replace(substring(spreadDate, 6), '-', '.') AS spreadDate,
+            price
+        FROM 
+            tbl_cptspreaddate 
+        WHERE 
+            appId = #{appId}
+         
+            <if test="spreadMonth != null">
+                AND spreadDate LIKE CONCAT('%', #{spreadMonth},'%')
+            </if>
+        
+        ORDER BY str_to_date(spreadDate, '%Y-%m-%d')
+   </select>
+   
+   <select id="getCPASpreadDate" parameterType="map" resultType="com.aora.sales.common.bean.CPASpreadDate">
+        SELECT 
+            cpasId,
+            replace(substring(spreadDate, 6), '-', '.') AS spreadDate,
+            price
+        FROM 
+            tbl_cpaspreaddate 
+        WHERE 
+            appId = #{appId}
+         
+            <if test="spreadMonth != null">
+                AND spreadDate LIKE CONCAT('%', #{spreadMonth},'%')
+            </if>
+        
+        ORDER BY str_to_date(spreadDate, '%Y-%m-%d')
+   </select>
+   
+   <select id="getSpreadDateByAppId" parameterType="int" resultType="com.aora.sales.common.bean.CPTSpreadDate">
+        SELECT 
+            cptSpreadId,
+            spreadDate,
+            price
+        FROM 
+            tbl_cptspreaddate 
+        WHERE 
+            appId = #{appId}
+        
+        ORDER BY str_to_date(spreadDate, '%Y-%m-%d')
+   </select>
+   
+   <update id="updateApp" parameterType="com.aora.sales.common.bean.App">
+       UPDATE 
+           tbl_app
+           
+        <set>
+            <if test="companyId != 0">companyId=#{companyId},</if>
+            <if test="appName != null">appName=#{appName},</if>
+            <if test="dividedMode != 0">dividedMode=#{dividedMode},</if>
+            <if test="mainCategory != 0">mainCategory=#{mainCategory},</if>
+            <if test="apkPath != null">apkPath=#{apkPath}</if>
+        </set>
+       
+       WHERE
+           appId=#{appId}
+   </update>
+   
+   <update id="updateCPTSpreadDate" parameterType="com.aora.sales.common.bean.CPTSpreadDate">
+       UPDATE
+           tbl_cptspreaddate
+       
+        <set>
+            <if test="price != null">price=#{price}</if>
+        </set>
+        
+        WHERE
+            cptSpreadId=#{cptSpreadId} 
+        AND
+            spreadDate=#{spreadDate}
+   </update>
+   
+   <delete id="deleteCPTSpreadDate" parameterType="int">
+       DELETE FROM 
+           tbl_cptspreaddate
+       WHERE
+           cptSpreadId=#{cptSpreadId}
+   </delete>
+   
+   <update id="updateStatus" parameterType="com.aora.sales.common.bean.App">
+       UPDATE 
+           tbl_app
+       SET
+           statusId=#{statusId}
+           <if test="onlineDate != null">,onlineDate=#{onlineDate}</if>
+           <if test="offlineDate != null">,offlineDate=#{offlineDate}</if>
+           <if test="packageName != null">,packageName=#{packageName}</if>
+           <if test="testResult != null">,testResult=#{testResult}</if>
+       WHERE
+           appId=#{appId}
+   </update>
+   
+</mapper>

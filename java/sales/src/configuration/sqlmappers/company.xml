@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="company">
+
+    <insert id="saveCMCCHotspot" parameterType="java.util.List">
+        INSERT INTO tbl_hotspot (
+            hotname, 
+            address, 
+            province, 
+            city, 
+            coverarea, 
+            longitude, 
+            latitude,
+            type,
+            status)
+        VALUES
+        <foreach collection="list" item="item" index="index"  separator=",">
+	       ( 
+	            #{item.hotname},
+	            #{item.address},
+	            #{item.province},
+	            #{item.city},
+	            #{item.coverarea},
+	            #{item.longitude},
+	            #{item.latitude},
+	            #{item.type},
+	            #{item.status}
+	        )
+        </foreach>
+    </insert>
+    
+    <select id="getProvinceByCity" parameterType="String" resultType="hashmap">
+        SELECT 
+            province, 
+            city
+        FROM
+            tbl_chinanet_gaode_hotspot
+        WHERE
+            city LIKE CONCAT('%', #{city},'%')
+    </select>
+    
+    <select id="getAllPartnerCategorys" resultType="com.aora.sales.common.bean.Dict">
+      SELECT 
+          dictId, 
+          dictType, 
+          dictName,
+          dictValue,
+          description
+      FROM 
+          tbl_dict
+      WHERE
+          dictType='companycategory'
+    </select>
+    
+    <select id="getPartnerById" parameterType="int" resultType="com.aora.sales.common.bean.Company">
+      SELECT 
+          c.companyId    AS companyId, 
+          c.companyName  AS companyName, 
+          c.categoryId   AS categoryId,
+          c.contact      AS contact,
+          c.telephone    AS telephone,
+          c.mobilephone  AS mobilephone,
+          c.email        AS email,
+          c.description  AS description
+      FROM 
+          tbl_company c
+      WHERE 
+          c.companyId = #{companyId}
+    </select>
+    
+    <select id="getAllPartners" resultType="com.aora.sales.common.bean.Company" parameterType="map">
+      SELECT 
+          c.companyId    AS companyId, 
+          c.companyName  AS companyName, 
+          c.categoryId   AS categoryId,
+          d.dictName     AS categoryName,
+          c.contact      AS contact,
+          c.telephone    AS telephone,
+          c.mobilephone  AS mobilephone,
+          c.email        AS email,
+          DATE_FORMAT(c.lastChangeDate, '%Y-%m-%d %H:%i:%s') AS lastChangeDateStr,
+          c.description    AS description
+      FROM 
+          tbl_company c
+      LEFT JOIN
+          tbl_dict d
+      ON
+          c.categoryId = d.dictId
+      WHERE 
+          1 = 1
+          
+          <if test="companyName != null">
+            AND  c.companyName = #{companyName}
+          </if>
+          
+          <if test="categoryId != 0">
+            AND  c.categoryId = #{categoryId}
+          </if>
+      
+      ORDER BY
+          c.companyId
+      <if test="getTotalSize != 1">      
+          LIMIT #{start}, #{pageSize}
+      </if>
+      
+    </select>
+    
+    <insert id="createPartner" parameterType="com.aora.sales.common.bean.Company">
+        INSERT INTO tbl_company(
+            companyName,
+            categoryId,
+            contact,
+            telephone,
+            mobilephone,
+            email,
+            creatorId,
+            createDate,
+            lastChangeDate,
+            description)
+        VALUES(
+            #{companyName, jdbcType=VARCHAR},
+            #{categoryId, jdbcType=INTEGER},
+            #{contact, jdbcType=VARCHAR},
+            #{telephone, jdbcType=VARCHAR},
+            #{mobilephone, jdbcType=VARCHAR},
+            #{email, jdbcType=VARCHAR},
+            #{creatorId, jdbcType=INTEGER},
+            NOW(),
+            NOW(),
+            #{description, jdbcType=VARCHAR})   
+    </insert>
+    
+    <update id="updatePartner" parameterType="com.aora.sales.common.bean.Company">
+        UPDATE
+            tbl_company
+        <set>
+            <if test="companyName != null">companyName=#{companyName},</if>
+            <if test="categoryId != 0">categoryId=#{categoryId},</if>
+            <if test="contact != null">contact=#{contact},</if>
+            <if test="telephone != null">telephone=#{telephone},</if>
+            <if test="mobilephone != null">mobilephone=#{mobilephone},</if>
+            <if test="email != null">email=#{email},</if>
+            <if test="description != null">description=#{description},</if>
+            lastChangeDate=NOW()
+        </set>
+          WHERE
+              companyId = #{companyId}
+    </update>
+</mapper>

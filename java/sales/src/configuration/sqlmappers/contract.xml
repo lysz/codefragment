@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="contract">
+	
+	<insert id="createContract" parameterType="com.aora.sales.common.bean.Contract" useGeneratedKeys="true">
+	    INSERT INTO tbl_contract(
+	        contractCode,
+	        companyId,
+	        createTime,
+	        createrId,
+	        startTime,
+	        endTime,
+	        attachmentPath,
+	        contact,
+	        telephone,
+	        searchURL,
+	        searchpwd,
+	        status,
+	        lastChangeDate,
+	        description)
+	    VALUES(
+	        #{contractCode, jdbcType=VARCHAR},
+	        #{companyId, jdbcType=INTEGER},
+	        NOW(),
+	        #{createrId, jdbcType=INTEGER},
+	        #{startTime, jdbcType=DATE},
+	        #{endTime, jdbcType=DATE},
+	        #{attachmentPath, jdbcType=VARCHAR},
+	        #{contact, jdbcType=VARCHAR},
+	        #{telephone, jdbcType=VARCHAR},
+	        #{searchURL, jdbcType=VARCHAR},
+	        #{searchpwd, jdbcType=VARCHAR},
+	        #{status, jdbcType=INTEGER},
+	        NOW(),
+	        #{description, jdbcType=VARCHAR})   
+	        
+	    <selectKey resultType="int" order="AFTER" keyProperty="contractId">
+	        SELECT LAST_INSERT_ID() as contractId
+	    </selectKey>
+    
+	</insert>
+	
+	<insert id="createAccount" parameterType="com.aora.sales.common.bean.Account">
+	    INSERT INTO tbl_account(
+	        accountNumber,
+	        bank,
+	        userName,
+	        companyId,
+	        contractId,
+	        accountType)
+	    VALUES(
+	        #{accountNumber},
+	        #{bank},
+	        #{userName},
+	        #{companyId},
+	        #{contractId},
+	        #{accountType}
+	    )
+	</insert>
+	
+	<update id="updateAccount" parameterType="com.aora.sales.common.bean.Account">
+        UPDATE
+            tbl_account
+        <set>
+            <if test="accountNumber != null">accountNumber=#{accountNumber},</if>
+            <if test="bank != 0">bank=#{bank},</if>
+            <if test="userName != null">userName=#{userName}</if>
+        </set>
+        WHERE
+            accountId = #{accountId}
+	</update>
+	
+	<select id="getAllContract" parameterType="map"  resultType="com.aora.sales.common.bean.Contract">
+	    SELECT
+	        a.companyName         AS companyName,
+	        b.companyId           AS companyId,
+	        b.contractId          AS contractId,
+	        b.contractCode        AS contractCode,
+	        b.attachmentPath      AS attachmentPath,
+	        b.startTime           AS startTime,
+	        b.endTime             AS endTime,
+	        b.contact             AS contact,
+	        b.telephone           AS telephone,
+	        b.searchURL           AS searchURL,
+	        b.searchpwd           AS searchpwd,
+	        b.lastChangeDate      AS lastChangeDate,
+	        b.description         AS description
+	    FROM
+	        tbl_contract b
+	    LEFT JOIN
+	        tbl_company a
+	    ON
+	        b.companyId = a.companyId 
+	    WHERE
+	        1 = 1
+          
+        <if test="contractId != 0">
+             AND b.contractId = #{contractId}
+        </if>
+          
+        <if test="contractCode != null">
+            AND b.contractCode LIKE CONCAT('%', #{contractCode},'%')
+        </if>
+          
+        <if test="companyId != 0">
+            AND b.companyId = #{companyId}
+        </if>
+        
+        <if test="startTime != null">
+           <![CDATA[  AND b.startTime >= #{startTime}  ]]>
+        </if>
+        
+        <if test="endTime != null">
+           <![CDATA[  AND b.endTime <= #{endTime}    ]]>
+        </if>
+        
+        <if test="accountNumber != null">
+            AND b.contractId IN (SELECT contractId FROM tbl_account WHERE accountNumber  LIKE CONCAT('%', #{accountNumber},'%'))
+        </if>
+        
+        <if test="bank != 0">
+            AND b.contractId IN ( SELECT contractId FROM tbl_account WHERE bank = #{bank} )
+        </if>
+        
+        <if test="userName != null">
+            AND b.contractId IN (SELECT contractId FROM tbl_account WHERE userName  LIKE CONCAT('%', #{userName},'%'))
+        </if>
+        
+      <if test="getTotalSize != 1">      
+          LIMIT #{start}, #{pageSize}
+      </if>
+        
+	</select>
+	
+	<select id="getAccounts" parameterType="com.aora.sales.common.bean.Contract" resultType="com.aora.sales.common.bean.Account">
+		SELECT
+		    a.accountId          AS accountId,
+		    a.bank               AS bank,
+		    a.contractId         AS contractId,
+		    a.accountNumber      AS accountNumber,
+		    a.userName           AS userName,
+		    (select d.dictName from tbl_dict d where d.dictId = a.accountType and d.dictType = 'accounttype') AS accounttypeName,
+		    (select d.dictName from tbl_dict d where d.dictId = a.bank and d.dictType = 'bank') AS bankName
+		FROM
+		    tbl_account a            
+        WHERE
+            a.contractId IN
+		  <foreach item="item" index="index" collection="list"
+		      open="(" separator="," close=")">
+		        #{item.contractId}
+		  </foreach>
+            
+	</select>
+	
+	<select id="getAllAccountTypeDict" resultType="com.aora.sales.common.bean.Dict">
+      SELECT 
+          dictId, 
+          dictType, 
+          dictName,
+          dictValue,
+          description
+      FROM 
+          tbl_dict
+      WHERE
+          dictType='accounttype'
+	</select>
+	
+    <select id="getAllBanks" resultType="com.aora.sales.common.bean.Dict">
+      SELECT 
+          dictId, 
+          dictType, 
+          dictName,
+          dictValue,
+          description
+      FROM 
+          tbl_dict
+      WHERE
+          dictType='bank'
+    </select>
+	
+	<update id="updateContract" parameterType="com.aora.sales.common.bean.Contract">
+	    UPDATE
+	        tbl_contract
+	    <set>
+	        <if test="contractCode != null">contractCode=#{contractCode},</if>
+	        <if test="companyId != 0">companyId=#{companyId},</if>
+	        <if test="startTime != null">startTime=#{startTime},</if>
+	        <if test="endTime != null">endTime=#{endTime},</if>
+	        <if test="attachmentPath != null">attachmentPath=#{attachmentPath},</if>
+	        <if test="contact != null">contact=#{contact},</if>
+	        <if test="telephone != null">telephone=#{telephone},</if>
+	        <if test="searchURL != null">searchURL=#{searchURL},</if>
+	        <if test="searchpwd != null">searchpwd=#{searchpwd},</if>
+	        <if test="description != null">description=#{description},</if>
+	        lastChangeDate=NOW(),
+	    </set>
+	      WHERE
+	            contractId = #{contractId}
+	</update>
+		
+</mapper>

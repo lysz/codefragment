@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="user">
+	
+    <select id="getUser" parameterType="com.aora.sales.common.bean.User" resultType="com.aora.sales.common.bean.User">
+	      SELECT 
+	          user.userId    AS userId, 
+	          user.name      As name,
+	          user.userName  AS userName,
+	          dict.dictName  AS deptName,
+	          user.deptId      AS deptId,
+	          user.roleId    As roleId,
+	          user.telephone        AS telephone,
+	          user.mobilephone AS mobilephone,
+	          user.email       AS email,
+	          role.roleName    AS roleName,
+	          user.description AS description
+	      FROM 
+	          tbl_user user
+	      LEFT JOIN
+	          tbl_dict dict
+	      ON 
+	          user.deptId = dict.dictId
+	      LEFT JOIN
+	          tbl_role role
+	      ON  
+	          user.roleId = role.roleId
+	      WHERE 
+	          1 = 1
+	          <if test="userId != 0">
+	              AND user.userId = #{userId}
+	          </if>
+	          
+	          <if test="userName != null">
+	              AND user.userName=#{userName}
+	          </if>
+	          
+	          <if test="password != null">
+	              AND user.password=#{password}
+	          </if>
+    </select>
+	
+    <select id="getAllDepts" resultType="com.aora.sales.common.bean.Dict">
+      SELECT 
+          dictId, 
+          dictType, 
+          dictName,
+          dictValue,
+          description
+      FROM 
+          tbl_dict
+      WHERE
+          dictType='department'
+    </select>
+    
+    <select id="getAllRoles" resultType="com.aora.sales.common.bean.Role">
+      SELECT 
+          roleId, 
+          roleName, 
+          description
+      FROM 
+          tbl_role
+    </select>
+	
+    <select id="getAllUsers" resultType="com.aora.sales.common.bean.User" parameterType="map">
+      SELECT 
+          user.userId    AS userId, 
+          user.name      As name,
+          user.userName  AS userName,
+          dict.dictName  AS deptName,
+          user.telephone        AS telephone,
+          user.mobilephone AS mobilephone,
+          user.email       AS email,
+          role.roleName    AS roleName,
+          user.description AS description
+      FROM 
+          tbl_user user
+      LEFT JOIN
+          tbl_dict dict
+      ON 
+          user.deptId = dict.dictId
+      LEFT JOIN
+          tbl_role role
+      ON  
+          user.roleId = role.roleId
+      WHERE 
+          1 = 1
+          
+          <if test="name != null">
+            AND  user.name=#{name}
+          </if>
+          
+          <if test="roleId != 0">
+            AND  user.roleId=#{roleId}
+          </if>
+          
+          <if test="deptId != 0">
+            AND  user.deptId=#{deptId}
+          </if>
+      
+      ORDER BY
+          user.userId
+      <if test="getTotalSize != 1">      
+          LIMIT #{start}, #{pageSize}
+      </if>
+    </select>
+	
+	<insert id="createUser" parameterType="com.aora.sales.common.bean.User">
+	    INSERT INTO tbl_user(
+	        name,
+	        userName,
+	        password,
+	        deptId,
+	        telephone,
+	        mobilephone,
+	        email,
+	        roleId,
+	        description)
+	    VALUES(
+	        #{name, jdbcType=VARCHAR},
+	        #{userName, jdbcType=VARCHAR},
+	        #{password, jdbcType=VARCHAR},
+	        #{deptId, jdbcType=VARCHAR},
+	        #{telephone, jdbcType=INTEGER},
+	        #{mobilephone, jdbcType=VARCHAR},
+	        #{email, jdbcType=VARCHAR},
+	        #{roleId, jdbcType=INTEGER},
+	        #{description, jdbcType=VARCHAR})   
+	</insert>
+	
+	<update id="updateUser" parameterType="com.aora.sales.common.bean.User">
+	    UPDATE
+	        tbl_user
+	    <set>
+	        <if test="userName != null">userName=#{userName},</if>
+	        <if test="password != null">password=#{password},</if>
+	        <if test="deptId != 0">deptId=#{deptId},</if>
+	        <if test="telephone != null">telephone=#{telephone},</if>
+	        <if test="mobilephone != null">mobilephone=#{mobilephone},</if>
+	        <if test="email != null">email=#{email},</if>
+	        <if test="roleId != 0">roleId=#{roleId},</if>
+	        <if test="description != null">description=#{description},</if>
+	        <if test="name != null">name=#{name}</if>
+	    </set>
+	    
+	      WHERE
+	            userId = #{userId}
+	</update>
+	
+	<delete id="deleteUser" parameterType="int">
+	    DELETE FROM 
+	        tbl_user 
+	    WHERE 
+	        userId = #{userId}
+	</delete>
+	
+	
+	<select id="getPermissionByRoleId" resultType="string" parameterType="int">
+	    SELECT
+	        permissionId
+	    FROM
+	        tbl_role
+	    WHERE
+	        roleId = #{roleId}
+	</select>
+	
+	<select id="getPermissionById" resultType="com.aora.sales.common.bean.Permission">
+	    SELECT
+	        permissionId,
+	        permissionName,
+	        url
+	    FROM
+	        tbl_permission
+	    WHERE
+	        permissionId IN
+	    <foreach item="item" collection="array" open="(" separator="," close=")">
+	        #{item}
+	    </foreach>   
+	</select>
+</mapper>
